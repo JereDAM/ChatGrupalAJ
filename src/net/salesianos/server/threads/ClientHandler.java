@@ -2,18 +2,19 @@ package net.salesianos.server.threads;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class ClientHandler extends Thread{
-    private ObjectInputStream clientObjInStream;
-    private ObjectOutputStream clientObjOutStream;
-    private ArrayList<ObjectOutputStream> connectedObjOutputStreamList;
+    private DataInputStream clientObjInStream;
+    private DataOutputStream clientObjOutStream;
+    private ArrayList<DataOutputStream> connectedObjOutputStreamList;
 
-    public ClientHandler(ObjectInputStream clientObjInStream, ObjectOutputStream clientObjOutStream,
-        ArrayList<ObjectOutputStream> connectedObjOutputStreamList) {
+    public ClientHandler(DataInputStream clientObjInStream, DataOutputStream clientObjOutStream,
+        ArrayList<DataOutputStream> connectedObjOutputStreamList) {
         this.clientObjInStream = clientObjInStream;
         this.clientObjOutStream = clientObjOutStream;
         this.connectedObjOutputStreamList = connectedObjOutputStreamList;
@@ -29,19 +30,21 @@ public class ClientHandler extends Thread{
         System.out.println("nombre: " + clientName);
       while (true) {
         String msgReceived = this.clientObjInStream.readUTF();
-        System.out.println(hora + clientName + ":" + msgReceived.toString());
 
-        for (ObjectOutputStream otherObjOutputStream : connectedObjOutputStreamList) {
-          if (otherObjOutputStream != this.clientObjOutStream) {
-            otherObjOutputStream.writeUTF(msgReceived);
+        if(msgReceived.startsWith("msg:")){
+          System.out.println(hora.of(NORM_PRIORITY, MIN_PRIORITY, MAX_PRIORITY) + " " + clientName + ":" + msgReceived.toString().substring(4));
+          for (DataOutputStream otherObjOutputStream : connectedObjOutputStreamList) {
+            if (otherObjOutputStream != this.clientObjOutStream) {
+              otherObjOutputStream.writeUTF(msgReceived);
+            }
           }
         }
+        
       }
-    } catch (EOFException eofException) {
-      this.connectedObjOutputStreamList.remove(this.clientObjOutStream);
-      System.out.println("CERRANDO CONEXIÓN CON " + clientName.toUpperCase());
     } catch (IOException e) {
-      e.printStackTrace();
+      // e.printStackTrace();
+      System.out.println("CERRANDO CONEXIÓN CON " + clientName.toUpperCase());
+      this.connectedObjOutputStreamList.remove(this.clientObjOutStream);
     }
 
   }
