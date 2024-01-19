@@ -1,16 +1,16 @@
 package net.salesianos.client.threads;
 
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class ServerListener extends Thread {
     
-    private ObjectInputStream objInStream;
+    private DataInputStream objInStream;
 
-    public ServerListener(ObjectInputStream objInStream) {
-        this.objInStream = objInStream;
+
+    public ServerListener(DataInputStream objInStream2 ) {
+        this.objInStream = objInStream2;
     }
-
     @Override
     public void run() {
         try {
@@ -19,7 +19,7 @@ public class ServerListener extends Thread {
                 System.out.println(newClient);
             }
         } catch (IOException e2) {
-           System.out.println("Message sending are not working");
+           System.out.println("Conexion cerrada...");
         }
     }
 }
