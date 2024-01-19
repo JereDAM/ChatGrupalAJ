@@ -2,16 +2,19 @@ package net.salesianos.server.threads;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import net.salesianos.shared.chat.Chat;
 
 public class ClientHandler extends Thread{
     private DataInputStream clientObjInStream;
     private DataOutputStream clientObjOutStream;
     private ArrayList<DataOutputStream> connectedObjOutputStreamList;
+    private Chat chat = new Chat();
 
     public ClientHandler(DataInputStream clientObjInStream, DataOutputStream clientObjOutStream,
         ArrayList<DataOutputStream> connectedObjOutputStreamList) {
@@ -23,19 +26,24 @@ public class ClientHandler extends Thread{
   @Override
   public void run() {
     String clientName = "";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     LocalTime hora = LocalTime.now();
+    String horaFormateada = hora.format(formatter);
     try {
         System.out.println("Recibiendo nombre");
         clientName = this.clientObjInStream.readUTF();
         System.out.println("nombre: " + clientName);
+        chat.showMsg(clientObjOutStream);
       while (true) {
         String msgReceived = this.clientObjInStream.readUTF();
 
         if(msgReceived.startsWith("msg:")){
-          System.out.println(hora + " " + clientName + ":" + msgReceived.toString().replace("msg:",""));
+          String newMsg = horaFormateada + " " + clientName + ":" + msgReceived.toString().replace("msg:","");
+          chat.addMsg(newMsg);
           for (DataOutputStream otherObjOutputStream : connectedObjOutputStreamList) {
             if (otherObjOutputStream != this.clientObjOutStream) {
-              otherObjOutputStream.writeUTF(msgReceived);
+              otherObjOutputStream.writeUTF(newMsg);
+              otherObjOutputStream.flush();
             }
           }
         } else {
