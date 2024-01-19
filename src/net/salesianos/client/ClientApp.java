@@ -1,7 +1,7 @@
 package net.salesianos.client;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -17,25 +17,39 @@ public class ClientApp {
         System.out.println("Introduzca su nombre de usuario :");
         String user = sc.nextLine();
 
-        Socket socket = new Socket("localhost" , Ports.SERVER_PORT);
-        ObjectOutputStream objOutStream = new ObjectOutputStream(socket.getOutputStream());
-        System.out.println("mandando " + user);
+        Socket socket = new Socket(Ports.JEREMY_IP , Ports.SERVER_PORT);
+        DataOutputStream objOutStream = new DataOutputStream(socket.getOutputStream());
         objOutStream.writeUTF(user);
+        objOutStream.flush();
 
-        // ObjectInputStream objInStream = new ObjectInputStream(socket.getInputStream());
-        // ServerListener serverListener = new ServerListener(objInStream);
-        // serverListener.start();
-
+    
+        DataInputStream objInStream = new DataInputStream(socket.getInputStream());
+        ServerListener serverListener = new ServerListener(objInStream);
+        serverListener.start();
+        
         while (userOption != "bye") {
+
+            System.out.println("Introduzca el mensaje : ");
+
             userOption = sc.nextLine();
-            System.out.println("escribiendo " + userOption);
-            objOutStream.writeUTF(userOption);
+
+            if (userOption.startsWith("msg:")) {
+                objOutStream.writeUTF(userOption);
+                objOutStream.flush();
+            }
+           
+
+            if(userOption.startsWith("bye")){
+                userOption = "bye";
+                sc.close();
+                objInStream.close();
+                objOutStream.close();
+                socket.close();
+            }
         }
 
-        sc.close();
-
-        // objInStream.close();
-        objOutStream.close();
-        socket.close();
+        
+        
+        
     }
 }
