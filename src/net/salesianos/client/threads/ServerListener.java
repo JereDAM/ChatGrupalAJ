@@ -16,7 +16,7 @@ public class ServerListener extends Thread {
         try {
             while (true) {
                 String newClient = this.objInStream.readUTF();
-                System.out.println("New user enter : " + newClient.toString());
+                System.out.println("New user enter : " + newClient.toString().substring(4));
             }
         } catch (IOException e2) {
            System.out.println("Message sending are not working");

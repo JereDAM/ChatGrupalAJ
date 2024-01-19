@@ -32,12 +32,14 @@ public class ClientHandler extends Thread{
         String msgReceived = this.clientObjInStream.readUTF();
 
         if(msgReceived.startsWith("msg:")){
-          System.out.println(hora.of(NORM_PRIORITY, MIN_PRIORITY, MAX_PRIORITY) + " " + clientName + ":" + msgReceived.toString().substring(4));
+          System.out.println(hora + " " + clientName + ":" + msgReceived.toString().replace("msg:",""));
           for (DataOutputStream otherObjOutputStream : connectedObjOutputStreamList) {
             if (otherObjOutputStream != this.clientObjOutStream) {
               otherObjOutputStream.writeUTF(msgReceived);
             }
           }
+        } else {
+          System.out.println("Debe escribir el prefijo correcto...");
         }
         
       }
