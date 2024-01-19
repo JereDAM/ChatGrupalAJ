@@ -13,14 +13,22 @@ public class Chat {
 
     public synchronized void showMsg(DataOutputStream otherObjOutputStream){
         if(!totalMsg.isEmpty()){
-            for (String msg : totalMsg) {
+            // for (String msg : totalMsg) {
+            //     try {
+            //         otherObjOutputStream.writeUTF(msg);
+            //         otherObjOutputStream.flush();
+            //     } catch (IOException e) {
+            //         e.printStackTrace();
+            //     }
+            // }
+            totalMsg.forEach( msg -> {
                 try {
                     otherObjOutputStream.writeUTF(msg);
                     otherObjOutputStream.flush();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            });
         }
     }
 }

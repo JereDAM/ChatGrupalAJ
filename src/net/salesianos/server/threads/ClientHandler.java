@@ -1,6 +1,5 @@
 package net.salesianos.server.threads;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,13 +13,14 @@ public class ClientHandler extends Thread{
     private DataInputStream clientObjInStream;
     private DataOutputStream clientObjOutStream;
     private ArrayList<DataOutputStream> connectedObjOutputStreamList;
-    private Chat chat = new Chat();
+    private Chat chat;
 
     public ClientHandler(DataInputStream clientObjInStream, DataOutputStream clientObjOutStream,
-        ArrayList<DataOutputStream> connectedObjOutputStreamList) {
+        ArrayList<DataOutputStream> connectedObjOutputStreamList,Chat chat) {
         this.clientObjInStream = clientObjInStream;
         this.clientObjOutStream = clientObjOutStream;
         this.connectedObjOutputStreamList = connectedObjOutputStreamList;
+        this.chat = chat;
     }
 
   @Override

@@ -9,12 +9,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import net.salesianos.server.threads.ClientHandler;
+import net.salesianos.shared.chat.Chat;
 import net.salesianos.shared.constant.Ports;
 
 public class ServerApp {
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(Ports.SERVER_PORT);
         ArrayList<DataOutputStream> connectedDataOutputStream = new ArrayList<>();
+        Chat chat = new Chat();
 
         while (true) {
             System.out.println("Esperando conexión");
@@ -26,7 +28,7 @@ public class ServerApp {
 
             DataInputStream clientDataInStream = new DataInputStream(clientSocket.getInputStream());
             ClientHandler clientHandler = new ClientHandler(clientDataInStream,
-            clientObjOutStream, connectedDataOutputStream);
+            clientObjOutStream, connectedDataOutputStream,chat);
             clientHandler.start();
         }
         // serverSocket.close();
